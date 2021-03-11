@@ -6,9 +6,9 @@ from string import ascii_lowercase
 from json import load
 from numpy import array, transpose
 
+
 #Solicitar carpeta al usuario
 print("Seleccione la carpeta a analizar...")
-print(os.getcwd())
 
 #Codigo de seleccion de carpeta
 root = Tk()
@@ -31,7 +31,7 @@ for dirName, subdirList, fileList in os.walk(Path):
 #print(A_files)
 
 #Matriz de valores por llenar | Especificar cuántas filas deben haber en la salida global
-valores= [[] for i in range(18)]
+valores= [[] for i in range(19)]
 
 #Lectura de información en base a excel llamado desde el vector
 if(len(A_files) > 1):
@@ -49,7 +49,7 @@ if(len(A_files) > 1):
         valores[2].append(int(value))
         #Valor de Total de Activos Brutos al 31/12/2020
         value = worksheet.cell(11, 4).value
-        valores[3].append(value/1000000)
+        valores[3].append(value)
         #Valor de Nº Agencias
         value = worksheet.cell(12, 4).value
         valores[4].append(value)
@@ -107,12 +107,16 @@ if(len(A_files) > 1):
         cal5 = worksheet.cell(68,7).value
         value = cal1 / (cal2+cal3+cal4+cal5) #
         valores[16].append(round(value,2)) #Se redondea a 2 decimales hasta nuevo aviso
-        #Valor Fondos Disponibles / Depósitos Socios (Cálculo)
-        cal1 = worksheet.cell(25, 7).value
-        cal2 = worksheet.cell(63, 7).value
+        #Valor Liquidez MN
+        cal1 = worksheet.cell(25, 5).value
+        cal2 = worksheet.cell(63, 5).value
         value = cal1 / cal2 #
         valores[17].append(round(value,2)) #Se redondea a 2 decimales hasta nuevo aviso
-
+        #Valor Liquidez ME
+        cal1 = worksheet.cell(25, 6).value
+        cal2 = worksheet.cell(63, 6).value
+        value = cal1 / cal2 #
+        valores[18].append(round(value,2)) #Se redondea a 2 decimales hasta nuevo aviso
 print("Seleccione la carpeta de depósito de información...")
 folder_selected_r = filedialog.askdirectory()
 # print("Listado de archivos en ruta:")
@@ -127,7 +131,8 @@ for dirName, subdirList, fileList in os.walk(folder_selected_r):
 
 #print(R_file)
 workbook = xlsxwriter.Workbook(R_file, {'strings_to_numbers': True})
-worksheet = workbook.add_worksheet("Liquidez DSCOOPA")
+worksheet = workbook.add_worksheet("Liquidez")
+worksheetResumen = workbook.add_worksheet("Resumen")
 #Letras hasta la cantidad de columnas necesarias
 columnas_titulo = []
 for c in ascii_lowercase:
@@ -163,10 +168,20 @@ valores = array(valores)
 valores = transpose(valores)
 valores = valores.tolist()
 
-worksheet.add_table('B3:S'+str(3+len(A_files)-1), {'data': valores, 'header_row': 0})
+worksheet.add_table('B3:T'+str(3+len(A_files)-1), {'data': valores, 'header_row': 0})
 
 worksheet.set_column(2, 2, 40) #Tamaño de columna nombre coopac
 worksheet.set_column(3, 19, 14) #Tamaño de columna general
+
+#Grafico de Liquidez en MN
+chart = workbook.add_chart({'type': 'bar'})
+chart.add_series({'values': '=Liquidez!S3:S'+str(3+len(A_files)-1)})
+worksheetResumen.insert_chart('C1', chart)
+
+#Grafico de Liquidez en ME
+chart = workbook.add_chart({'type': 'bar'})
+chart.add_series({'values': '=Liquidez!T3:T'+str(3+len(A_files)-1)})
+worksheetResumen.insert_chart('J1', chart)
 
 workbook.close()
 #Matriz de resultados de análisis
