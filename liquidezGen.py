@@ -1,6 +1,7 @@
 import os
-from random import choice, random, uniform, randint
+#from random import choice, random, uniform, randint
 import xlsxwriter
+import xlrd
 from tkinter import Tk, filedialog
 from string import ascii_lowercase
 from json import load
@@ -28,9 +29,25 @@ titulos = [
         "Ratio de Liquidez en ME (Trimestral)"
     ]
 
+#Solicitar carpeta al usuario
+print("Seleccione la carpeta a analizar...")
+
+#Codigo de seleccion de carpeta
+root = Tk()
+root.withdraw()
+folder_selected = filedialog.askdirectory()
+
+A_files = []
+
 #Matriz de valores por llenar | Especificar cuántas filas deben haber en la salida global
 valores= [[] for i in range(19)]
-A_files = [0,0,0,0,0]
+for dirName, subdirList, fileList in os.walk(folder_selected):                        
+    for filename in fileList:   
+        if ".xlsx" in filename.lower() or ".xlsm" in filename.lower(): 
+            if not filename.startswith('~$'):
+                A_files.append(os.path.join(dirName,filename)) 
+
+
 #Arreglos de obligaciones a CP de <10%, >=10% y <=20% ... >50%
 oblig1 = 0
 oblig2 = 0
@@ -56,34 +73,43 @@ fondos_disp = 0
 condicion = ["Si", "No"]
 #Lectura de información en base a excel llamado desde el vector
 if(len(A_files) != 0):
-    for i in range(100):
+    for i in range(len(A_files)):
         #Numero de fila
         valores[0].append(int(i+1))
+        #Lectura de excel
+        workbook = xlrd.open_workbook(A_files[i])
+        worksheet = workbook.sheet_by_name('Requerimiento') #Nombre de hoja a leer del Excel
         #Valor de nombre de COOPAC - cell(fila,columna)
-        valores[1].append("Valor de prueba"+str(i))
+        value = worksheet.cell(4, 4).value
+        valores[1].append(value)
         #Valor de Nº Socios
-        value = randint(50,501)
+        value = worksheet.cell(10, 4).value
         valores[2].append(int(value))
         #Valor de Total de Activos Brutos al 31/12/2020
-        value = uniform(1000000,5000000)
+        value = worksheet.cell(11, 4).value
         valores[3].append(value)
         #Valor de Nº Agencias
-        value = randint(1,7)
+        value = worksheet.cell(12, 4).value
         valores[4].append(value)
         #Valor de Nº Agencias Abiertas
-        value2 = randint(1, value)
-        valores[5].append(value2)
+        value = worksheet.cell(13, 4).value
+        valores[5].append(value)
         #Valor de Agencia Principal Abierta?
-        value = choice(condicion)
+        value = worksheet.cell(14, 4).value
         valores[6].append(value)
         #Valor Captan CTS?
-        value = choice(condicion)
+        value = worksheet.cell(15, 4).value
         valores[7].append(value)
         #Valor Fondos Disponibles (Cálculo)
-        value = round(uniform(0.30, 0.70), 2)
+        cal1 = worksheet.cell(25, 5).value
+        cal2 = worksheet.cell(25, 7).value
+        #fondos_disp.append(round(cal2,2))
+        value = cal1/cal2 #Fondos disponibles -> Tabla 1 total en MN / total
         valores[8].append(round(value,2)) #Se redondea a 2 decimales hasta nuevo aviso
         #Valor Obligaciones CP (Cálculo)
-        value = round(uniform(0.05, 0.90), 2)
+        cal1 = worksheet.cell(63, 5).value
+        cal2 = worksheet.cell(63, 7).value
+        value = cal1/cal2 #
         if value < 0.10:
             oblig1 += 1
         elif value >=0.10 and value <0.20:
@@ -98,40 +124,56 @@ if(len(A_files) != 0):
             oblig6 += 1
         valores[9].append(round(value,2)) #Se redondea a 2 decimales hasta nuevo aviso
         #Valor Fondos Disponibles / Total de Activos Brutos (Cálculo)
-        value = round(uniform(1000000.01, 25000000.99), 2)
+        cal1 = worksheet.cell(25, 7).value
+        cal2 = worksheet.cell(11, 4).value #Por verificar
+        value = cal1/cal2 #
         valores[10].append(value) #Se redondea a 2 decimales hasta nuevo aviso
         #Valor Fondos Disponibles Sin Restricción (Cálculo)
-        value = round(uniform(2000000.01, 35000000.99), 2)
+        cal1 = worksheet.cell(25, 7).value
+        cal2 = worksheet.cell(53, 7).value 
+        value = cal1 - cal2 #
         valores[11].append(value) #Se redondea a 2 decimales hasta nuevo aviso
         #Valor Depósitos de Socios y COOPAC CP (Cálculo)
-        value = round(uniform(1000000.01, 25000000.99), 2)
+        cal1 = worksheet.cell(59, 7).value
+        cal2 = worksheet.cell(60, 7).value 
+        value = cal1 + cal2 #
         valores[12].append(value) #Se redondea a 2 decimales hasta nuevo aviso
         #Valor Obligaciones CP
-        value = round(uniform(1000000.01, 25000000.99), 2)
+        value = worksheet.cell(63, 7).value
         valores[13].append(value)
         #Valor Fondos Disponibles / Depósitos Socios (Cálculo)
-        value = round(uniform(0.10, 0.60), 2)
+        cal1 = worksheet.cell(25, 7).value
+        cal2 = worksheet.cell(59, 7).value
+        cal3 = worksheet.cell(67,7).value
+        value = cal1 / (cal2+cal3) #
         valores[14].append(round(value,2)) #Se redondea a 2 decimales hasta nuevo aviso
         #Valor Depósitos 10 Principales depositantes
-        value = round(uniform(1000000.01, 25000000.99), 2)
+        value = worksheet.cell(75, 7).value
         valores[15].append(round(value,2)) #Se redondea a 2 decimales hasta nuevo aviso
         #Valor % Depósitos 10 Principales depositantes
-        value = round(uniform(0.10, 0.60), 2)
-        if value < 0.10:
+        cal1 = worksheet.cell(75, 7).value
+        cal2 = worksheet.cell(59, 7).value
+        cal3 = worksheet.cell(60,7).value
+        cal4 = worksheet.cell(67,7).value
+        cal5 = worksheet.cell(68,7).value
+        value = cal1 / (cal2+cal3+cal4+cal5) #
+        if value < 0.50:
             deposit1 += 1
-        elif value >=0.10 and value <0.20:
+        elif value >=0.50 and value <0.60:
             deposit2 += 1
-        elif value >= 0.20 and value <0.30:
+        elif value >= 0.60 and value <0.70:
             deposit3 += 1
-        elif value >= 0.30 and value <0.40:
+        elif value >= 0.70 and value <0.80:
             deposit4 += 1
-        elif value >= 0.40 and value <0.50:
+        elif value >= 0.80 and value <0.90:
             deposit5 += 1
-        elif value >= 0.50:
+        elif value >= 0.90:
             deposit6 += 1
         valores[16].append(round(value,2)) #Se redondea a 2 decimales hasta nuevo aviso
         #Valor Liquidez MN
-        value = round(uniform(0.01, 0.50), 2)
+        cal1 = worksheet.cell(25, 5).value
+        cal2 = worksheet.cell(63, 5).value
+        value = cal1 / cal2 #
         if (value < 0.08):
             liq_critico_mn += 1
         elif (value >= 0.08 and value <= 0.2):
@@ -140,7 +182,9 @@ if(len(A_files) != 0):
             liq_normal_mn += 1
         valores[17].append(round(value,2)) #Se redondea a 2 decimales hasta nuevo aviso
         #Valor Liquidez ME
-        value = round(uniform(0.10, 0.60), 2)
+        cal1 = worksheet.cell(25, 6).value
+        cal2 = worksheet.cell(63, 6).value
+        value = cal1 / cal2 #
         if (value < 0.2):
             liq_critico_me += 1
         elif (value >= 0.2 ):
@@ -157,19 +201,19 @@ liquidez_me = [liq_critico_me, liq_bajo_me, liq_normal_me]
 oblig_rango = ['Menor a 10%', 'Entre 10% y 20%', 'Entre 20% y 30%', 'Entre 30% y 40%', 'Entre 40% y 50%', 'Mayor a 50%']
 obligaciones_cp = [oblig1, oblig2, oblig3, oblig4, oblig5, oblig6]
 #Arreglos de % Top 10 Depositantes
-depos_rango = ['Menor a 10%', 'Entre 10% y 20%', 'Entre 20% y 30%', 'Entre 30% y 40%', 'Entre 40% y 50%', 'Mayor a 50%']
+depos_rango = ['Menor a 50%', 'Entre 50% y 60%', 'Entre 60% y 70%', 'Entre 70% y 80%', 'Entre 80% y 90%', 'Mayor a 90%']
 depositantes_pctj = [deposit1, deposit2, deposit3, deposit4, deposit5, deposit6]
 
-#Selección del archivo resultado
-for dirName, subdirList, fileList in os.walk("./resultado"):
-    for filename in fileList:
-        #print(filename)                                                    
-        if ".xlsx" in filename.lower() or ".xlsm" in filename.lower():
-            if not filename.startswith('~$'):
-                R_file = os.path.join(dirName,filename)
+#Solicitar carpeta al usuario
+print("Seleccione la carpeta de depósito de información...")
+
+#Codigo de seleccion de carpeta
+root = Tk()
+root.withdraw()
+folder_selected_r = filedialog.askdirectory()
 
 #print(R_file)
-workbook = xlsxwriter.Workbook("./Monitor de Liquidez Prueba.xlsx", {'strings_to_numbers': True})
+workbook = xlsxwriter.Workbook(folder_selected_r+"/Monitor de Liquidez.xlsx", {'strings_to_numbers': True})
 worksheetResumen = workbook.add_worksheet("Resumen")
 worksheet = workbook.add_worksheet("Liquidez")
 worksheetCalculos = workbook.add_worksheet("Calculos")
@@ -199,14 +243,11 @@ worksheet.write('B1',"Información expresada en S/", cell_format_bold)
 row = 2
 col = 2
 
-# for col, data in enumerate(valores):
-#     worksheet.write_column(row, col+1, data)
-
 valores = array(valores)
 valores = transpose(valores)
 valores = valores.tolist()
 
-worksheet.add_table('B3:T'+str(3+99), {'data': valores, 'header_row': 0})
+worksheet.add_table('B3:T'+str(3+len(A_files)-1), {'data': valores, 'header_row': 0})
 
 worksheet.set_column(2, 2, 40) #Tamaño de columna nombre coopac
 worksheet.set_column(3, 19, 15) #Tamaño de columna general
@@ -239,10 +280,10 @@ chart.add_series({
     })
 worksheetResumen.insert_chart('L3', chart)
 #Grafico de Obligaciones a CP
-chart = workbook.add_chart({'type': 'pie'})
+chart = workbook.add_chart({'type': 'column'})
 chart.set_y_axis({'name': 'Cantidad de COOPAC'})
 chart.add_series({
-    'name':       'Representatividad de MN de Obligaciones CP',
+    'name':       'Concentración de MN de Obligaciones a CP',
     'categories': 'Calculos!A5:F5',
     'values': '=Calculos!A6:F6',
     'data_labels': {'value': True},
@@ -250,11 +291,11 @@ chart.add_series({
 worksheetResumen.insert_chart('C18', chart)
 
 #Grafico de Depositantes %
-chart = workbook.add_chart({'type': 'pie'})
+chart = workbook.add_chart({'type': 'column'})
 #chart.set_y_axis({'name': 'Cantidad de COOPAC'})
 #chart.set_legend({'position': 'none'})
 chart.add_series({
-    'name':       'Representatividad de los 10 principales socios con respecto al Total de Depósitos',
+    'name':       'Concentración de los 10 principales socios con respecto al Total de Depósitos de socios',
     'categories': 'Calculos!A5:F5',
     'values': '=Calculos!A6:F6',
     'data_labels': {'value': True},
