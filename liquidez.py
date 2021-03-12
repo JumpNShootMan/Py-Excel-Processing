@@ -260,6 +260,8 @@ worksheetCalculos.write_row(7,0, depos_rango)
 worksheetCalculos.write_row(8,0, depositantes_pctj)
 #Grafico de Liquidez en MN
 chart = workbook.add_chart({'type': 'column'})
+chart.set_y_axis({'name': 'Cantidad de COOPAC'})
+chart.set_legend({'position': 'none'})
 chart.add_series({
     'name':       'Estado de Liquidez en MN',
     'categories': 'Calculos!A1:C1',
@@ -271,6 +273,8 @@ worksheetResumen.insert_chart('C3', chart)
 
 #Grafico de Liquidez en ME
 chart = workbook.add_chart({'type': 'column'})
+chart.set_y_axis({'name': 'Cantidad de COOPAC'})
+chart.set_legend({'position': 'none'})
 chart.add_series({
     'name':       'Estado de Liquidez en ME',
     'categories': 'Calculos!D1:E1',
@@ -282,6 +286,7 @@ worksheetResumen.insert_chart('L3', chart)
 #Grafico de Obligaciones a CP
 chart = workbook.add_chart({'type': 'column'})
 chart.set_y_axis({'name': 'Cantidad de COOPAC'})
+chart.set_legend({'position': 'none'})
 chart.add_series({
     'name':       'Concentración de MN de Obligaciones a CP',
     'categories': 'Calculos!A5:F5',
@@ -292,8 +297,8 @@ worksheetResumen.insert_chart('C18', chart)
 
 #Grafico de Depositantes %
 chart = workbook.add_chart({'type': 'column'})
-#chart.set_y_axis({'name': 'Cantidad de COOPAC'})
-#chart.set_legend({'position': 'none'})
+chart.set_y_axis({'name': 'Cantidad de COOPAC'})
+chart.set_legend({'position': 'none'})
 chart.add_series({
     'name':       'Concentración de los 10 Principales Socios con respecto al Total de Depósitos de Socios',
     'categories': 'Calculos!A5:F5',
