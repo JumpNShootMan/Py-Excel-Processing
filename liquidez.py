@@ -303,8 +303,5 @@ chart.add_series({
     })
 worksheetResumen.insert_chart('L18', chart)
 
-
-
-
 workbook.close()
 #Matriz de resultados de análisis
