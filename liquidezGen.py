@@ -170,8 +170,8 @@ for dirName, subdirList, fileList in os.walk("./resultado"):
 
 #print(R_file)
 workbook = xlsxwriter.Workbook("./Monitor de Liquidez Prueba.xlsx", {'strings_to_numbers': True})
-worksheet = workbook.add_worksheet("Liquidez")
 worksheetResumen = workbook.add_worksheet("Resumen")
+worksheet = workbook.add_worksheet("Liquidez")
 worksheetCalculos = workbook.add_worksheet("Calculos")
 worksheetCalculos.hide()
 #Letras hasta la cantidad de columnas necesarias
@@ -186,9 +186,16 @@ cell_format.set_bg_color('#003366')
 cell_format.set_align('center')
 cell_format.set_text_wrap()
 cell_format.set_valign('vcenter')
+cell_format_titulo_resumen = workbook.add_format({'bold': True})
+cell_format_titulo_resumen.set_color('#003366')
+cell_format_titulo_resumen.set_font_size(24)
+
+
 for i in range(len(valores)):
     worksheet.write(columnas_titulo[i+1].upper()+str(2), titulos[i], cell_format)
+worksheetResumen.write('A1',"Graficos de Liquidez", cell_format_titulo_resumen)    
 worksheet.write('B1',"Información expresada en S/", cell_format_bold)
+
 row = 2
 col = 2
 
@@ -219,7 +226,7 @@ chart.add_series({
     'data_labels': {'value': True},
     'legend_key': {'value': True} ,
     })
-worksheetResumen.insert_chart('C1', chart)
+worksheetResumen.insert_chart('C3', chart)
 
 #Grafico de Liquidez en ME
 chart = workbook.add_chart({'type': 'column'})
@@ -230,24 +237,24 @@ chart.add_series({
     'data_labels': {'value': True},
     'legend_key':  {'value': True},
     })
+<<<<<<< Updated upstream
 worksheetResumen.insert_chart('L1', chart)
 
+=======
+worksheetResumen.insert_chart('L3', chart)
+>>>>>>> Stashed changes
 #Grafico de Obligaciones a CP
 chart = workbook.add_chart({'type': 'pie'})
 chart.set_y_axis({'name': 'Cantidad de COOPAC'})
 chart.set_legend({'position': 'none'})
 chart.add_series({
-<<<<<<< HEAD
-    'name':       'Estado de Obligaciones a CP',
-=======
     'name':       'Representatividad de MN de Obligaciones CP',
->>>>>>> master
     'categories': 'Calculos!A5:F5',
     'values': '=Calculos!A6:F6',
     'data_labels': {'value': True},
     'fill':   {'color': 'red'},
     })
-worksheetResumen.insert_chart('C16', chart)
+worksheetResumen.insert_chart('C18', chart)
 
 #Grafico de Depositantes %
 chart = workbook.add_chart({'type': 'pie'})
