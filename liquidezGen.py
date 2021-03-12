@@ -246,6 +246,10 @@ chart.add_series({
     'categories': 'Calculos!A5:F5',
     'values': '=Calculos!A6:F6',
     'data_labels': {'value': True},
+<<<<<<< Updated upstream
+=======
+   
+>>>>>>> Stashed changes
     })
 worksheetResumen.insert_chart('C18', chart)
 
