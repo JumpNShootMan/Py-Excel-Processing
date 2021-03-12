@@ -134,9 +134,9 @@ if(len(A_files) != 0):
         value = round(uniform(0.01, 0.50), 2)
         if (value < 0.08):
             liq_critico_mn += 1
-        elif (value >= 0.08 and value <= 0.2):
+        elif (value >= 0.08 and value <= 0.15):
             liq_bajo_mn += 1
-        elif (value > 0.2):
+        elif (value > 0.15):
             liq_normal_mn += 1
         valores[17].append(round(value,2)) #Se redondea a 2 decimales hasta nuevo aviso
         #Valor Liquidez ME
@@ -150,7 +150,7 @@ if(len(A_files) != 0):
 
 R_file = 0            
 # Arreglos de rangos de Liquidez MN y ME
-liquidez_rangos = ['Menor a 8%', 'Entre 8% y 20%', 'Mayor a 20%','Menor o igual a 20%' ,'Mayor a 20%']
+liquidez_rangos = ['Menor a 8%', 'Entre 8% y 15%', 'Mayor a 15%','Menor o igual a 20%' ,'Mayor a 20%']
 liquidez_mn = [liq_critico_mn, liq_bajo_mn, liq_normal_mn]
 liquidez_me = [liq_critico_me, liq_bajo_me, liq_normal_me]
 #Arreglos de Obligaciones a CP
@@ -220,7 +220,7 @@ worksheetCalculos.write_row(8,0, depositantes_pctj)
 #Grafico de Liquidez en MN
 chart = workbook.add_chart({'type': 'column'})
 chart.add_series({
-    'name':       'Estado de Liquidez en MN',
+    'name':       'Ratio de Liquidez en MN',
     'categories': 'Calculos!A1:C1',
     'values': '=Calculos!A2:C2',
     'data_labels': {'value': True},
@@ -231,7 +231,7 @@ worksheetResumen.insert_chart('C3', chart)
 #Grafico de Liquidez en ME
 chart = workbook.add_chart({'type': 'column'})
 chart.add_series({
-    'name':       'Estado de Liquidez en ME',
+    'name':       'Ratio de Liquidez en ME',
     'categories': 'Calculos!D1:E1',
     'values': '=Calculos!A3:B3',
     'data_labels': {'value': True},
@@ -246,10 +246,7 @@ chart.add_series({
     'categories': 'Calculos!A5:F5',
     'values': '=Calculos!A6:F6',
     'data_labels': {'value': True},
-<<<<<<< Updated upstream
-=======
    
->>>>>>> Stashed changes
     })
 worksheetResumen.insert_chart('C18', chart)
 
