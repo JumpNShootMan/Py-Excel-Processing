@@ -4,7 +4,7 @@ block_cipher = None
 
 
 a = Analysis(['liquidez.py'],
-             pathex=['D:\\Daniel Núñez R\\Documents\\Python\\Liquidez'],
+             pathex=['C:\\Users\\dnunez\\Documents\\Python\\Monitor de Liquidez\\Presentable2'],
              binaries=[],
              datas=[],
              hiddenimports=[],
