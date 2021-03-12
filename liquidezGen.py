@@ -49,7 +49,7 @@ fondos_disp = 0
 condicion = ["Si", "No"]
 #Lectura de información en base a excel llamado desde el vector
 if(len(A_files) != 0):
-    for i in range(99):
+    for i in range(100):
         #Numero de fila
         valores[0].append(int(i+1))
         #Valor de nombre de COOPAC - cell(fila,columna)
@@ -151,7 +151,7 @@ workbook = xlsxwriter.Workbook("./Monitor de Liquidez Prueba.xlsx", {'strings_to
 worksheet = workbook.add_worksheet("Liquidez")
 worksheetResumen = workbook.add_worksheet("Resumen")
 worksheetCalculos = workbook.add_worksheet("Calculos")
-worksheetCalculos.hide();
+worksheetCalculos.hide()
 #Letras hasta la cantidad de columnas necesarias
 columnas_titulo = []
 for c in ascii_lowercase:
@@ -181,11 +181,11 @@ worksheet.add_table('B3:T'+str(3+99), {'data': valores, 'header_row': 0})
 
 worksheet.set_column(2, 2, 40) #Tamaño de columna nombre coopac
 worksheet.set_column(3, 19, 15) #Tamaño de columna general
-worksheetResumen.write_row(0,0, liquidez_rangos)
-worksheetResumen.write_row(1,0, liquidez_mn)
-worksheetResumen.write_row(2,0, liquidez_me)
-worksheetResumen.write_row(4,0, oblig_rango)
-worksheetResumen.write_row(5,0, obligaciones_cp)
+worksheetCalculos.write_row(0,0, liquidez_rangos)
+worksheetCalculos.write_row(1,0, liquidez_mn)
+worksheetCalculos.write_row(2,0, liquidez_me)
+worksheetCalculos.write_row(4,0, oblig_rango)
+worksheetCalculos.write_row(5,0, obligaciones_cp)
 #Grafico de Liquidez en MN
 chart = workbook.add_chart({'type': 'column'})
 chart.add_series({
@@ -209,12 +209,13 @@ chart.add_series({
 worksheetResumen.insert_chart('L1', chart)
 #Grafico de Obligaciones a CP
 chart = workbook.add_chart({'type': 'column'})
+chart.set_y_axis({'name': 'Cantidad de COOPAC'})
+chart.set_legend({'position': 'none'})
 chart.add_series({
-    'name':       'Estado de Obligaciones a CP',
-    'categories': 'Resumen!A5:F5',
-    'values': '=Resumen!A6:F6',
+    'name':       'Representatividad de MN de Obligaciones CP',
+    'categories': 'Calculos!A5:F5',
+    'values': '=Calculos!A6:F6',
     'data_labels': {'value': True},
-    'legend_key': False
     })
 worksheetResumen.insert_chart('C16', chart)
 
