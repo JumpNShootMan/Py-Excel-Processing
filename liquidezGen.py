@@ -181,11 +181,11 @@ worksheet.add_table('B3:T'+str(3+99), {'data': valores, 'header_row': 0})
 
 worksheet.set_column(2, 2, 40) #Tamaño de columna nombre coopac
 worksheet.set_column(3, 19, 15) #Tamaño de columna general
-worksheetResumen.write_row(0,0, liquidez_rangos)
-worksheetResumen.write_row(1,0, liquidez_mn)
-worksheetResumen.write_row(2,0, liquidez_me)
-worksheetResumen.write_row(4,0, oblig_rango)
-worksheetResumen.write_row(5,0, obligaciones_cp)
+worksheetCalculos.write_row(0,0, liquidez_rangos)
+worksheetCalculos.write_row(1,0, liquidez_mn)
+worksheetCalculos.write_row(2,0, liquidez_me)
+worksheetCalculos.write_row(4,0, oblig_rango)
+worksheetCalculos.write_row(5,0, obligaciones_cp)
 #Grafico de Liquidez en MN
 chart = workbook.add_chart({'type': 'column'})
 chart.add_series({
@@ -211,8 +211,8 @@ worksheetResumen.insert_chart('L1', chart)
 chart = workbook.add_chart({'type': 'column'})
 chart.add_series({
     'name':       'Estado de Obligaciones a CP',
-    'categories': 'Resumen!A5:F5',
-    'values': '=Resumen!A6:F6',
+    'categories': 'Calculos!A5:F5',
+    'values': '=Calculos!A6:F6',
     'data_labels': {'value': True},
     'legend_key': False
     })
