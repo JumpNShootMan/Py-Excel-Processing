@@ -38,6 +38,13 @@ oblig3 = 0
 oblig4 = 0
 oblig5 = 0
 oblig6 = 0
+#Arreglos de Top 10 Depositantes <10%, >=10% y <=20% ... >50%
+deposit1 = 0
+deposit2 = 0
+deposit3 = 0
+deposit4 = 0
+deposit5 = 0
+deposit6 = 0
 #Arreglos de liquidez con rangos de >=8%, <8% y >=20%,  <20%
 liq_critico_mn = 0
 liq_bajo_mn = 0               
@@ -110,6 +117,18 @@ if(len(A_files) != 0):
         valores[15].append(round(value,2)) #Se redondea a 2 decimales hasta nuevo aviso
         #Valor % Depósitos 10 Principales depositantes
         value = round(uniform(0.10, 0.60), 2)
+        if value < 0.10:
+            deposit1 += 1
+        elif value >=0.10 and value <0.20:
+            deposit2 += 1
+        elif value >= 0.20 and value <0.30:
+            deposit3 += 1
+        elif value >= 0.30 and value <0.40:
+            deposit4 += 1
+        elif value >= 0.40 and value <0.50:
+            deposit5 += 1
+        elif value >= 0.50:
+            deposit6 += 1
         valores[16].append(round(value,2)) #Se redondea a 2 decimales hasta nuevo aviso
         #Valor Liquidez MN
         value = round(uniform(0.01, 0.50), 2)
@@ -137,6 +156,9 @@ liquidez_me = [liq_critico_me, liq_bajo_me, liq_normal_me]
 #Arreglos de Obligaciones a CP
 oblig_rango = ['Menor a 10%', 'Entre 10% y 20%', 'Entre 20% y 30%', 'Entre 30% y 40%', 'Entre 40% y 50%', 'Mayor a 50%']
 obligaciones_cp = [oblig1, oblig2, oblig3, oblig4, oblig5, oblig6]
+#Arreglos de % Top 10 Depositantes
+depos_rango = ['Menor a 10%', 'Entre 10% y 20%', 'Entre 20% y 30%', 'Entre 30% y 40%', 'Entre 40% y 50%', 'Mayor a 50%']
+depositantes_pctj = [deposit1, deposit2, deposit3, deposit4, deposit5, deposit6]
 
 #Selección del archivo resultado
 for dirName, subdirList, fileList in os.walk("./resultado"):
@@ -186,6 +208,8 @@ worksheetCalculos.write_row(1,0, liquidez_mn)
 worksheetCalculos.write_row(2,0, liquidez_me)
 worksheetCalculos.write_row(4,0, oblig_rango)
 worksheetCalculos.write_row(5,0, obligaciones_cp)
+worksheetCalculos.write_row(7,0, depos_rango)
+worksheetCalculos.write_row(8,0, depositantes_pctj)
 #Grafico de Liquidez en MN
 chart = workbook.add_chart({'type': 'column'})
 chart.add_series({
@@ -207,8 +231,9 @@ chart.add_series({
     'legend_key':  {'value': True},
     })
 worksheetResumen.insert_chart('L1', chart)
+
 #Grafico de Obligaciones a CP
-chart = workbook.add_chart({'type': 'column'})
+chart = workbook.add_chart({'type': 'pie'})
 chart.set_y_axis({'name': 'Cantidad de COOPAC'})
 chart.set_legend({'position': 'none'})
 chart.add_series({
@@ -220,8 +245,22 @@ chart.add_series({
     'categories': 'Calculos!A5:F5',
     'values': '=Calculos!A6:F6',
     'data_labels': {'value': True},
+    'fill':   {'color': 'red'},
     })
 worksheetResumen.insert_chart('C16', chart)
+
+#Grafico de Depositantes %
+chart = workbook.add_chart({'type': 'pie'})
+#chart.set_y_axis({'name': 'Cantidad de COOPAC'})
+#chart.set_legend({'position': 'none'})
+chart.add_series({
+    'name':       '% Depósitos 10 principales depositantes de Depósitos Totales',
+    'categories': 'Calculos!A5:F5',
+    'values': '=Calculos!A6:F6',
+    'data_labels': {'value': True},
+    #'fill':   {'color': 'red'},
+    })
+worksheetResumen.insert_chart('L16', chart)
 
 
 
