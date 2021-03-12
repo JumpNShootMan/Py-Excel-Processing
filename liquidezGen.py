@@ -237,12 +237,7 @@ chart.add_series({
     'data_labels': {'value': True},
     'legend_key':  {'value': True},
     })
-<<<<<<< Updated upstream
-worksheetResumen.insert_chart('L1', chart)
-
-=======
 worksheetResumen.insert_chart('L3', chart)
->>>>>>> Stashed changes
 #Grafico de Obligaciones a CP
 chart = workbook.add_chart({'type': 'pie'})
 chart.set_y_axis({'name': 'Cantidad de COOPAC'})
@@ -261,13 +256,13 @@ chart = workbook.add_chart({'type': 'pie'})
 #chart.set_y_axis({'name': 'Cantidad de COOPAC'})
 #chart.set_legend({'position': 'none'})
 chart.add_series({
-    'name':       '% Depósitos 10 principales depositantes de Depósitos Totales',
+    'name':       'Representatividad de los 10 principales socios con respecto al Total de Depósitos',
     'categories': 'Calculos!A5:F5',
     'values': '=Calculos!A6:F6',
     'data_labels': {'value': True},
     #'fill':   {'color': 'red'},
     })
-worksheetResumen.insert_chart('L16', chart)
+worksheetResumen.insert_chart('L18', chart)
 
 
 
