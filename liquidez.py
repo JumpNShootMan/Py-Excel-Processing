@@ -41,7 +41,16 @@ folder_selected = filedialog.askdirectory()
 Path = folder_selected
 
 #Listado de archivos del directorio y asignación a un vector
-A_files = []                        
+A_files = []  
+#Fondos Disponibles
+fondos_disp = []
+#Arreglos de liquidez con rangos de >=8%, <8% y >=20%,  <20%
+liq_critico_mn = 0
+liq_bajo_mn = 0               
+liq_normal_mn = 0     
+liq_critico_me = 0
+liq_bajo_me = 0               
+liq_normal_me = 0    
 #print("Listado de archivos en ruta:")                                            
 for dirName, subdirList, fileList in os.walk(Path):                        
     for filename in fileList:   
@@ -86,6 +95,7 @@ if(len(A_files) > 1):
         #Valor Fondos Disponibles (Cálculo)
         cal1 = worksheet.cell(25, 5).value
         cal2 = worksheet.cell(25, 7).value
+        fondos_disp.append(round(cal2,2))
         value = cal1/cal2 #Fondos disponibles -> Tabla 1 total en MN / total
         valores[8].append(round(value,2)) #Se redondea a 2 decimales hasta nuevo aviso
         #Valor Obligaciones CP (Cálculo)
@@ -132,17 +142,37 @@ if(len(A_files) > 1):
         cal1 = worksheet.cell(25, 5).value
         cal2 = worksheet.cell(63, 5).value
         value = cal1 / cal2 #
+        if (value <= 0.08):
+            liq_critico_mn += 1
+        elif (value > 0.08 and value <= 0.2):
+            liq_bajo_mn += 1
+        elif (value > 0.2):
+            liq_normal_mn += 1
+            
         valores[17].append(round(value,2)) #Se redondea a 2 decimales hasta nuevo aviso
         #Valor Liquidez ME
         cal1 = worksheet.cell(25, 6).value
         cal2 = worksheet.cell(63, 6).value
         value = cal1 / cal2 #
+        if (value <= 0.08):
+            liq_critico_me += 1
+        elif (value > 0.08 and value <= 0.2):
+            liq_bajo_me += 1
+        elif (value > 0.2):
+            liq_normal_me += 1
+            
         valores[18].append(round(value,2)) #Se redondea a 2 decimales hasta nuevo aviso
 print("Seleccione la carpeta de depósito de información...")
 folder_selected_r = filedialog.askdirectory()
 # print("Listado de archivos en ruta:")
-R_file = 0            
+      
 
+# Arreglos de rangos de Liquidez MN y ME
+liquidez_mn = [liq_critico_mn, liq_bajo_mn, liq_normal_mn]
+liquidez_me = [liq_critico_me, liq_bajo_me, liq_normal_me]
+
+#Folder resultado se abre y se lista el primer archivo .xlsx
+R_file = 0  
 for dirName, subdirList, fileList in os.walk(folder_selected_r):
     for filename in fileList:
         #print(filename)                                                    
@@ -192,16 +222,13 @@ worksheet.add_table('B3:T'+str(3+len(A_files)-1), {'data': valores, 'header_row'
 
 worksheet.set_column(2, 2, 40) #Tamaño de columna nombre coopac
 worksheet.set_column(3, 19, 15) #Tamaño de columna general
-
+print(liquidez_me)
 #Grafico de Liquidez en MN
-chart = workbook.add_chart({'type': 'bar'})
+chart = workbook.add_chart({'type': 'column'})
 chart.add_series({'values': '=Liquidez!S3:S'+str(3+len(A_files)-1)})
 worksheetResumen.insert_chart('C1', chart)
 
-#Grafico de Liquidez en ME
-chart = workbook.add_chart({'type': 'bar'})
-chart.add_series({'values': '=Liquidez!T3:T'+str(3+len(A_files)-1)})
-worksheetResumen.insert_chart('J1', chart)
+
 
 workbook.close()
 #Matriz de resultados de análisis
