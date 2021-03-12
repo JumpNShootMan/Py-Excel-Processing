@@ -49,7 +49,7 @@ fondos_disp = 0
 condicion = ["Si", "No"]
 #Lectura de información en base a excel llamado desde el vector
 if(len(A_files) != 0):
-    for i in range(99):
+    for i in range(100):
         #Numero de fila
         valores[0].append(int(i+1))
         #Valor de nombre de COOPAC - cell(fila,columna)
@@ -151,7 +151,7 @@ workbook = xlsxwriter.Workbook("./Monitor de Liquidez Prueba.xlsx", {'strings_to
 worksheet = workbook.add_worksheet("Liquidez")
 worksheetResumen = workbook.add_worksheet("Resumen")
 worksheetCalculos = workbook.add_worksheet("Calculos")
-worksheetCalculos.hide();
+worksheetCalculos.hide()
 #Letras hasta la cantidad de columnas necesarias
 columnas_titulo = []
 for c in ascii_lowercase:
@@ -209,12 +209,17 @@ chart.add_series({
 worksheetResumen.insert_chart('L1', chart)
 #Grafico de Obligaciones a CP
 chart = workbook.add_chart({'type': 'column'})
+chart.set_y_axis({'name': 'Cantidad de COOPAC'})
+chart.set_legend({'position': 'none'})
 chart.add_series({
+<<<<<<< HEAD
     'name':       'Estado de Obligaciones a CP',
+=======
+    'name':       'Representatividad de MN de Obligaciones CP',
+>>>>>>> master
     'categories': 'Calculos!A5:F5',
     'values': '=Calculos!A6:F6',
     'data_labels': {'value': True},
-    'legend_key': False
     })
 worksheetResumen.insert_chart('C16', chart)
 
