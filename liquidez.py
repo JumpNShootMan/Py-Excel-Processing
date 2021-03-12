@@ -295,7 +295,7 @@ chart = workbook.add_chart({'type': 'column'})
 #chart.set_y_axis({'name': 'Cantidad de COOPAC'})
 #chart.set_legend({'position': 'none'})
 chart.add_series({
-    'name':       'Concentración de los 10 principales socios con respecto al Total de Depósitos de socios',
+    'name':       'Concentración de los 10 Principales Socios con respecto al Total de Depósitos de Socios',
     'categories': 'Calculos!A5:F5',
     'values': '=Calculos!A6:F6',
     'data_labels': {'value': True},
