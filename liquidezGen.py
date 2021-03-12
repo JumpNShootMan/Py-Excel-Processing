@@ -1,5 +1,5 @@
 import os
-import xlrd
+from random import choice, random, uniform, randint
 import xlsxwriter
 from tkinter import Tk, filedialog
 from string import ascii_lowercase
@@ -28,122 +28,72 @@ titulos = [
         "Ratio de Liquidez en ME (Trimestral)"
     ]
 
-#Solicitar carpeta al usuario
-print("Seleccione la carpeta a analizar...")
-
-#Codigo de seleccion de carpeta
-root = Tk()
-root.withdraw()
-folder_selected = filedialog.askdirectory()
-
-#Validacion de ruta seleccionada
-#print(folder_selected)
-Path = folder_selected
-
-#Listado de archivos del directorio y asignación a un vector
-A_files = []                        
-#print("Listado de archivos en ruta:")                                            
-for dirName, subdirList, fileList in os.walk(Path):                        
-    for filename in fileList:   
-        if ".xlsx" in filename.lower() or ".xlsm" in filename.lower(): 
-            if not filename.startswith('~$'):
-                A_files.append(os.path.join(dirName,filename)) 
-
-#print(A_files)
-
 #Matriz de valores por llenar | Especificar cuántas filas deben haber en la salida global
 valores= [[] for i in range(19)]
-
+A_files = [0,0,0,0,0]
+condicion = ["Si", "No"]
 #Lectura de información en base a excel llamado desde el vector
-if(len(A_files) > 1):
-    for i in range(len(A_files)):
+if(len(A_files) != 0):
+    for i in range(99):
         #Numero de fila
         valores[0].append(int(i+1))
-        #Lectura de excel
-        workbook = xlrd.open_workbook(A_files[i])
-        worksheet = workbook.sheet_by_name('Requerimiento') #Nombre de hoja a leer del Excel
         #Valor de nombre de COOPAC - cell(fila,columna)
-        value = worksheet.cell(4, 4).value
-        valores[1].append(value)
+        valores[1].append("Valor de prueba"+str(i))
         #Valor de Nº Socios
-        value = worksheet.cell(10, 4).value
+        value = randint(50,501)
         valores[2].append(int(value))
         #Valor de Total de Activos Brutos al 31/12/2020
-        value = worksheet.cell(11, 4).value
+        value = uniform(1000000,5000000)
         valores[3].append(value)
         #Valor de Nº Agencias
-        value = worksheet.cell(12, 4).value
+        value = randint(1,7)
         valores[4].append(value)
         #Valor de Nº Agencias Abiertas
-        value = worksheet.cell(13, 4).value
-        valores[5].append(value)
+        value2 = randint(1, value)
+        valores[5].append(value2)
         #Valor de Agencia Principal Abierta?
-        value = worksheet.cell(14, 4).value
+        value = choice(condicion)
         valores[6].append(value)
         #Valor Captan CTS?
-        value = worksheet.cell(15, 4).value
+        value = choice(condicion)
         valores[7].append(value)
         #Valor Fondos Disponibles (Cálculo)
-        cal1 = worksheet.cell(25, 5).value
-        cal2 = worksheet.cell(25, 7).value
-        value = cal1/cal2 #Fondos disponibles -> Tabla 1 total en MN / total
+        value = round(uniform(0.30, 0.70), 2)
         valores[8].append(round(value,2)) #Se redondea a 2 decimales hasta nuevo aviso
         #Valor Obligaciones CP (Cálculo)
-        cal1 = worksheet.cell(63, 5).value
-        cal2 = worksheet.cell(63, 7).value
-        value = cal1/cal2 #
+        value = round(uniform(0.30, 0.90), 2)
         valores[9].append(round(value,2)) #Se redondea a 2 decimales hasta nuevo aviso
         #Valor Fondos Disponibles / Total de Activos Brutos (Cálculo)
-        cal1 = worksheet.cell(25, 7).value
-        cal2 = worksheet.cell(11, 4).value #Por verificar
-        value = cal1/cal2 #
+        value = round(uniform(1000000.01, 25000000.99), 2)
         valores[10].append(value) #Se redondea a 2 decimales hasta nuevo aviso
         #Valor Fondos Disponibles Sin Restricción (Cálculo)
-        cal1 = worksheet.cell(25, 7).value
-        cal2 = worksheet.cell(53, 7).value 
-        value = cal1 - cal2 #
+        value = round(uniform(2000000.01, 35000000.99), 2)
         valores[11].append(value) #Se redondea a 2 decimales hasta nuevo aviso
         #Valor Depósitos de Socios y COOPAC CP (Cálculo)
-        cal1 = worksheet.cell(59, 7).value
-        cal2 = worksheet.cell(60, 7).value 
-        value = cal1 + cal2 #
+        value = round(uniform(1000000.01, 25000000.99), 2)
         valores[12].append(value) #Se redondea a 2 decimales hasta nuevo aviso
         #Valor Obligaciones CP
-        value = worksheet.cell(63, 7).value
+        value = round(uniform(1000000.01, 25000000.99), 2)
         valores[13].append(value)
         #Valor Fondos Disponibles / Depósitos Socios (Cálculo)
-        cal1 = worksheet.cell(25, 7).value
-        cal2 = worksheet.cell(59, 7).value
-        cal3 = worksheet.cell(67,7).value
-        value = cal1 / (cal2+cal3) #
+        value = round(uniform(0.10, 0.60), 2)
         valores[14].append(round(value,2)) #Se redondea a 2 decimales hasta nuevo aviso
         #Valor Depósitos 10 Principales depositantes
-        value = worksheet.cell(75, 7).value
+        value = round(uniform(1000000.01, 25000000.99), 2)
         valores[15].append(round(value,2)) #Se redondea a 2 decimales hasta nuevo aviso
-        #Valor Fondos Disponibles / Depósitos Socios (Cálculo)
-        cal1 = worksheet.cell(75, 7).value
-        cal2 = worksheet.cell(59, 7).value
-        cal3 = worksheet.cell(60,7).value
-        cal4 = worksheet.cell(67,7).value
-        cal5 = worksheet.cell(68,7).value
-        value = cal1 / (cal2+cal3+cal4+cal5) #
+        #Valor % Depósitos 10 Principales depositantes
+        value = round(uniform(0.10, 0.60), 2)
         valores[16].append(round(value,2)) #Se redondea a 2 decimales hasta nuevo aviso
         #Valor Liquidez MN
-        cal1 = worksheet.cell(25, 5).value
-        cal2 = worksheet.cell(63, 5).value
-        value = cal1 / cal2 #
+        value = round(uniform(0.10, 0.60), 2)
         valores[17].append(round(value,2)) #Se redondea a 2 decimales hasta nuevo aviso
         #Valor Liquidez ME
-        cal1 = worksheet.cell(25, 6).value
-        cal2 = worksheet.cell(63, 6).value
-        value = cal1 / cal2 #
+        value = round(uniform(0.10, 0.60), 2)
         valores[18].append(round(value,2)) #Se redondea a 2 decimales hasta nuevo aviso
-print("Seleccione la carpeta de depósito de información...")
-folder_selected_r = filedialog.askdirectory()
-# print("Listado de archivos en ruta:")
+
 R_file = 0            
 
-for dirName, subdirList, fileList in os.walk(folder_selected_r):
+for dirName, subdirList, fileList in os.walk("./resultado"):
     for filename in fileList:
         #print(filename)                                                    
         if ".xlsx" in filename.lower() or ".xlsm" in filename.lower():
@@ -151,22 +101,13 @@ for dirName, subdirList, fileList in os.walk(folder_selected_r):
                 R_file = os.path.join(dirName,filename)
 
 #print(R_file)
-workbook = xlsxwriter.Workbook(R_file, {'strings_to_numbers': True})
+workbook = xlsxwriter.Workbook("./resultado/Monitor de Liquidez Prueba.xlsx", {'strings_to_numbers': True})
 worksheet = workbook.add_worksheet("Liquidez")
 worksheetResumen = workbook.add_worksheet("Resumen")
 #Letras hasta la cantidad de columnas necesarias
 columnas_titulo = []
 for c in ascii_lowercase:
     columnas_titulo.append(c)
-
-#-----------------------------------------------
-#print("Seleccione folder de títulos...")
-#folder_selected_t = filedialog.askdirectory()
-#with open(titul, encoding='utf-8') as f:
-#    d = load(f)
-#    titulos = d["titulos"]
-#print(titulos)
-#-----------------------------------------------
 
 #Celdas de Título y Formato
 cell_format = workbook.add_format({'bold': False, 'font_color': 'white'})
@@ -188,21 +129,20 @@ valores = array(valores)
 valores = transpose(valores)
 valores = valores.tolist()
 
-worksheet.add_table('B3:T'+str(3+len(A_files)-1), {'data': valores, 'header_row': 0})
+worksheet.add_table('B3:T'+str(3+99), {'data': valores, 'header_row': 0})
 
 worksheet.set_column(2, 2, 40) #Tamaño de columna nombre coopac
 worksheet.set_column(3, 19, 15) #Tamaño de columna general
 
 #Grafico de Liquidez en MN
 chart = workbook.add_chart({'type': 'bar'})
-chart.add_series({'values': '=Liquidez!S3:S'+str(3+len(A_files)-1)})
+chart.add_series({'values': '=Liquidez!S3:S'+str(3+99-1)})
 worksheetResumen.insert_chart('C1', chart)
 
 #Grafico de Liquidez en ME
 chart = workbook.add_chart({'type': 'bar'})
-chart.add_series({'values': '=Liquidez!T3:T'+str(3+len(A_files)-1)})
+chart.add_series({'values': '=Liquidez!T3:T'+str(3+99-1)})
 worksheetResumen.insert_chart('J1', chart)
 
 workbook.close()
 #Matriz de resultados de análisis
-k=input("Los resultados de encuentran en la carpeta. Presionar intro para cerrar")
