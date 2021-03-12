@@ -241,13 +241,11 @@ worksheetResumen.insert_chart('L3', chart)
 #Grafico de Obligaciones a CP
 chart = workbook.add_chart({'type': 'pie'})
 chart.set_y_axis({'name': 'Cantidad de COOPAC'})
-chart.set_legend({'position': 'none'})
 chart.add_series({
     'name':       'Representatividad de MN de Obligaciones CP',
     'categories': 'Calculos!A5:F5',
     'values': '=Calculos!A6:F6',
     'data_labels': {'value': True},
-    'fill':   {'color': 'red'},
     })
 worksheetResumen.insert_chart('C18', chart)
 
