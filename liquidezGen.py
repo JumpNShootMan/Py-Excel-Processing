@@ -31,6 +31,13 @@ titulos = [
 #Matriz de valores por llenar | Especificar cuántas filas deben haber en la salida global
 valores= [[] for i in range(19)]
 A_files = [0,0,0,0,0]
+#Arreglos de liquidez con rangos de >=8%, <8% y >=20%,  <20%
+liq_critico_mn = 0
+liq_bajo_mn = 0               
+liq_normal_mn = 0     
+liq_critico_me = 0
+liq_bajo_me = 0               
+liq_normal_me = 0    
 condicion = ["Si", "No"]
 #Lectura de información en base a excel llamado desde el vector
 if(len(A_files) != 0):
@@ -86,12 +93,28 @@ if(len(A_files) != 0):
         valores[16].append(round(value,2)) #Se redondea a 2 decimales hasta nuevo aviso
         #Valor Liquidez MN
         value = round(uniform(0.10, 0.60), 2)
+        if (value < 0.08):
+            liq_critico_mn += 1
+        elif (value >= 0.08 and value <= 0.2):
+            liq_bajo_mn += 1
+        elif (value > 0.2):
+            liq_normal_mn += 1
         valores[17].append(round(value,2)) #Se redondea a 2 decimales hasta nuevo aviso
         #Valor Liquidez ME
         value = round(uniform(0.10, 0.60), 2)
+        if (value < 0.08):
+            liq_critico_me += 1
+        elif (value >= 0.08 and value <= 0.2):
+            liq_bajo_me += 1
+        elif (value > 0.2):
+            liq_normal_me += 1
         valores[18].append(round(value,2)) #Se redondea a 2 decimales hasta nuevo aviso
 
 R_file = 0            
+# Arreglos de rangos de Liquidez MN y ME
+liquidez_rangos = ['Menor a 8%', 'Entre 8% y 20%', 'Mayor a 20%']
+liquidez_mn = [liq_critico_mn, liq_bajo_mn, liq_normal_mn]
+liquidez_me = [liq_critico_me, liq_bajo_me, liq_normal_me]
 
 for dirName, subdirList, fileList in os.walk("./resultado"):
     for filename in fileList:
@@ -101,7 +124,7 @@ for dirName, subdirList, fileList in os.walk("./resultado"):
                 R_file = os.path.join(dirName,filename)
 
 #print(R_file)
-workbook = xlsxwriter.Workbook("./resultado/Monitor de Liquidez Prueba.xlsx", {'strings_to_numbers': True})
+workbook = xlsxwriter.Workbook("./Monitor de Liquidez Prueba.xlsx", {'strings_to_numbers': True})
 worksheet = workbook.add_worksheet("Liquidez")
 worksheetResumen = workbook.add_worksheet("Resumen")
 #Letras hasta la cantidad de columnas necesarias
@@ -133,15 +156,26 @@ worksheet.add_table('B3:T'+str(3+99), {'data': valores, 'header_row': 0})
 
 worksheet.set_column(2, 2, 40) #Tamaño de columna nombre coopac
 worksheet.set_column(3, 19, 15) #Tamaño de columna general
-
+worksheetResumen.write_row(0,0, liquidez_rangos)
+worksheetResumen.write_row(1,0, liquidez_mn)
+worksheetResumen.write_row(2,0, liquidez_me)
 #Grafico de Liquidez en MN
-chart = workbook.add_chart({'type': 'bar'})
-chart.add_series({'values': '=Liquidez!S3:S'+str(3+99-1)})
+chart = workbook.add_chart({'type': 'column'})
+chart.add_series({
+    'name':       'Estado de Liquidez en MN',
+    'categories': 'Resumen!A1:C1',
+    'values': '=Resumen!A2:C2',
+    })
 worksheetResumen.insert_chart('C1', chart)
 
 #Grafico de Liquidez en ME
-chart = workbook.add_chart({'type': 'bar'})
-chart.add_series({'values': '=Liquidez!T3:T'+str(3+99-1)})
+chart = workbook.add_chart({'type': 'column'})
+chart.add_series({
+    'name':       'Estado de Liquidez en ME',
+    'categories': 'Resumen!A1:C1',
+    'values': '=Resumen!A3:C3',
+    })
+
 worksheetResumen.insert_chart('J1', chart)
 
 workbook.close()
