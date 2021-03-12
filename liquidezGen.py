@@ -31,6 +31,13 @@ titulos = [
 #Matriz de valores por llenar | Especificar cuántas filas deben haber en la salida global
 valores= [[] for i in range(19)]
 A_files = [0,0,0,0,0]
+#Arreglos de obligaciones a CP de <10%, >=10% y <=20% ... >50%
+oblig1 = 0
+oblig2 = 0
+oblig3 = 0
+oblig4 = 0
+oblig5 = 0
+oblig6 = 0
 #Arreglos de liquidez con rangos de >=8%, <8% y >=20%,  <20%
 liq_critico_mn = 0
 liq_bajo_mn = 0               
@@ -38,6 +45,7 @@ liq_normal_mn = 0
 liq_critico_me = 0
 liq_bajo_me = 0               
 liq_normal_me = 0    
+fondos_disp = 0
 condicion = ["Si", "No"]
 #Lectura de información en base a excel llamado desde el vector
 if(len(A_files) != 0):
@@ -68,7 +76,19 @@ if(len(A_files) != 0):
         value = round(uniform(0.30, 0.70), 2)
         valores[8].append(round(value,2)) #Se redondea a 2 decimales hasta nuevo aviso
         #Valor Obligaciones CP (Cálculo)
-        value = round(uniform(0.30, 0.90), 2)
+        value = round(uniform(0.05, 0.90), 2)
+        if value < 0.10:
+            oblig1 += 1
+        elif value >=0.10 and value <0.20:
+            oblig2 += 1
+        elif value >= 0.20 and value <0.30:
+            oblig3 += 1
+        elif value >= 0.30 and value <0.40:
+            oblig4 += 1
+        elif value >= 0.40 and value <0.50:
+            oblig5 += 1
+        elif value >= 0.50:
+            oblig6 += 1
         valores[9].append(round(value,2)) #Se redondea a 2 decimales hasta nuevo aviso
         #Valor Fondos Disponibles / Total de Activos Brutos (Cálculo)
         value = round(uniform(1000000.01, 25000000.99), 2)
@@ -92,7 +112,7 @@ if(len(A_files) != 0):
         value = round(uniform(0.10, 0.60), 2)
         valores[16].append(round(value,2)) #Se redondea a 2 decimales hasta nuevo aviso
         #Valor Liquidez MN
-        value = round(uniform(0.10, 0.60), 2)
+        value = round(uniform(0.01, 0.50), 2)
         if (value < 0.08):
             liq_critico_mn += 1
         elif (value >= 0.08 and value <= 0.2):
@@ -115,7 +135,11 @@ R_file = 0
 liquidez_rangos = ['Menor a 8%', 'Entre 8% y 20%', 'Mayor a 20%']
 liquidez_mn = [liq_critico_mn, liq_bajo_mn, liq_normal_mn]
 liquidez_me = [liq_critico_me, liq_bajo_me, liq_normal_me]
+#Arreglos de Obligaciones a CP
+oblig_rango = ['Menor a 10%', 'Entre 10% y 20%', 'Entre 20% y 30%', 'Entre 30% y 40%', 'Entre 40% y 50%', 'Mayor a 50%']
+obligaciones_cp = [oblig1, oblig2, oblig3, oblig4, oblig5, oblig6]
 
+#Selección del archivo resultado
 for dirName, subdirList, fileList in os.walk("./resultado"):
     for filename in fileList:
         #print(filename)                                                    
@@ -159,6 +183,8 @@ worksheet.set_column(3, 19, 15) #Tamaño de columna general
 worksheetResumen.write_row(0,0, liquidez_rangos)
 worksheetResumen.write_row(1,0, liquidez_mn)
 worksheetResumen.write_row(2,0, liquidez_me)
+worksheetResumen.write_row(4,0, oblig_rango)
+worksheetResumen.write_row(5,0, obligaciones_cp)
 #Grafico de Liquidez en MN
 chart = workbook.add_chart({'type': 'column'})
 chart.add_series({
@@ -175,8 +201,19 @@ chart.add_series({
     'categories': 'Resumen!A1:C1',
     'values': '=Resumen!A3:C3',
     })
+worksheetResumen.insert_chart('K1', chart)
+#Grafico de Obligaciones a CP
+chart = workbook.add_chart({'type': 'column'})
+chart.add_series({
+    'name':       'Estado de Obligaciones a CP',
+    'categories': 'Resumen!A5:F5',
+    'values': '=Resumen!A6:F6',
+    'data_labels': {'value': True},
+    'legend_key': False
+    })
+worksheetResumen.insert_chart('C16', chart)
 
-worksheetResumen.insert_chart('J1', chart)
+
 
 workbook.close()
 #Matriz de resultados de análisis

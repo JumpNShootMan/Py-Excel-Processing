@@ -42,6 +42,8 @@ Path = folder_selected
 
 #Listado de archivos del directorio y asignación a un vector
 A_files = []  
+#Fondos Disponibles
+fondos_disp = []
 #Arreglos de liquidez con rangos de >=8%, <8% y >=20%,  <20%
 liq_critico_mn = 0
 liq_bajo_mn = 0               
@@ -93,6 +95,7 @@ if(len(A_files) > 1):
         #Valor Fondos Disponibles (Cálculo)
         cal1 = worksheet.cell(25, 5).value
         cal2 = worksheet.cell(25, 7).value
+        fondos_disp.append(round(cal2,2))
         value = cal1/cal2 #Fondos disponibles -> Tabla 1 total en MN / total
         valores[8].append(round(value,2)) #Se redondea a 2 decimales hasta nuevo aviso
         #Valor Obligaciones CP (Cálculo)
@@ -162,10 +165,14 @@ if(len(A_files) > 1):
 print("Seleccione la carpeta de depósito de información...")
 folder_selected_r = filedialog.askdirectory()
 # print("Listado de archivos en ruta:")
-R_file = 0            
+      
+
 # Arreglos de rangos de Liquidez MN y ME
 liquidez_mn = [liq_critico_mn, liq_bajo_mn, liq_normal_mn]
 liquidez_me = [liq_critico_me, liq_bajo_me, liq_normal_me]
+
+#Folder resultado se abre y se lista el primer archivo .xlsx
+R_file = 0  
 for dirName, subdirList, fileList in os.walk(folder_selected_r):
     for filename in fileList:
         #print(filename)                                                    
