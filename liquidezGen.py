@@ -181,17 +181,11 @@ worksheet.add_table('B3:T'+str(3+99), {'data': valores, 'header_row': 0})
 
 worksheet.set_column(2, 2, 40) #Tamaño de columna nombre coopac
 worksheet.set_column(3, 19, 15) #Tamaño de columna general
-<<<<<<< Updated upstream
 worksheetResumen.write_row(0,0, liquidez_rangos)
 worksheetResumen.write_row(1,0, liquidez_mn)
 worksheetResumen.write_row(2,0, liquidez_me)
 worksheetResumen.write_row(4,0, oblig_rango)
 worksheetResumen.write_row(5,0, obligaciones_cp)
-=======
-worksheetCalculos.write_row(0,0, liquidez_rangos)
-worksheetCalculos.write_row(1,0, liquidez_mn)
-worksheetCalculos.write_row(2,0, liquidez_me)
->>>>>>> Stashed changes
 #Grafico de Liquidez en MN
 chart = workbook.add_chart({'type': 'column'})
 chart.add_series({
@@ -212,7 +206,7 @@ chart.add_series({
     'data_labels': {'value': True},
     'legend_key':  {'value': True},
     })
-worksheetResumen.insert_chart('K1', chart)
+worksheetResumen.insert_chart('L1', chart)
 #Grafico de Obligaciones a CP
 chart = workbook.add_chart({'type': 'column'})
 chart.add_series({
@@ -225,10 +219,7 @@ chart.add_series({
 worksheetResumen.insert_chart('C16', chart)
 
 
-<<<<<<< Updated upstream
-=======
-worksheetResumen.insert_chart('L1', chart)
->>>>>>> Stashed changes
+
 
 workbook.close()
 #Matriz de resultados de análisis
