@@ -122,17 +122,16 @@ if(len(A_files) != 0):
         valores[17].append(round(value,2)) #Se redondea a 2 decimales hasta nuevo aviso
         #Valor Liquidez ME
         value = round(uniform(0.10, 0.60), 2)
-        if (value < 0.08):
+        if (value < 0.2):
             liq_critico_me += 1
-        elif (value >= 0.08 and value <= 0.2):
+        elif (value >= 0.2 ):
             liq_bajo_me += 1
-        elif (value > 0.2):
-            liq_normal_me += 1
+        
         valores[18].append(round(value,2)) #Se redondea a 2 decimales hasta nuevo aviso
 
 R_file = 0            
 # Arreglos de rangos de Liquidez MN y ME
-liquidez_rangos = ['Menor a 8%', 'Entre 8% y 20%', 'Mayor a 20%']
+liquidez_rangos = ['Menor a 8%', 'Entre 8% y 20%', 'Mayor a 20%','Menor o igual a 20%' ,'Mayor a 20%']
 liquidez_mn = [liq_critico_mn, liq_bajo_mn, liq_normal_mn]
 liquidez_me = [liq_critico_me, liq_bajo_me, liq_normal_me]
 #Arreglos de Obligaciones a CP
@@ -151,6 +150,8 @@ for dirName, subdirList, fileList in os.walk("./resultado"):
 workbook = xlsxwriter.Workbook("./Monitor de Liquidez Prueba.xlsx", {'strings_to_numbers': True})
 worksheet = workbook.add_worksheet("Liquidez")
 worksheetResumen = workbook.add_worksheet("Resumen")
+worksheetCalculos = workbook.add_worksheet("Calculos")
+worksheetCalculos.hide();
 #Letras hasta la cantidad de columnas necesarias
 columnas_titulo = []
 for c in ascii_lowercase:
@@ -180,17 +181,25 @@ worksheet.add_table('B3:T'+str(3+99), {'data': valores, 'header_row': 0})
 
 worksheet.set_column(2, 2, 40) #Tamaño de columna nombre coopac
 worksheet.set_column(3, 19, 15) #Tamaño de columna general
+<<<<<<< Updated upstream
 worksheetResumen.write_row(0,0, liquidez_rangos)
 worksheetResumen.write_row(1,0, liquidez_mn)
 worksheetResumen.write_row(2,0, liquidez_me)
 worksheetResumen.write_row(4,0, oblig_rango)
 worksheetResumen.write_row(5,0, obligaciones_cp)
+=======
+worksheetCalculos.write_row(0,0, liquidez_rangos)
+worksheetCalculos.write_row(1,0, liquidez_mn)
+worksheetCalculos.write_row(2,0, liquidez_me)
+>>>>>>> Stashed changes
 #Grafico de Liquidez en MN
 chart = workbook.add_chart({'type': 'column'})
 chart.add_series({
     'name':       'Estado de Liquidez en MN',
-    'categories': 'Resumen!A1:C1',
-    'values': '=Resumen!A2:C2',
+    'categories': 'Calculos!A1:C1',
+    'values': '=Calculos!A2:C2',
+    'data_labels': {'value': True},
+    'legend_key': {'value': True} ,
     })
 worksheetResumen.insert_chart('C1', chart)
 
@@ -198,8 +207,10 @@ worksheetResumen.insert_chart('C1', chart)
 chart = workbook.add_chart({'type': 'column'})
 chart.add_series({
     'name':       'Estado de Liquidez en ME',
-    'categories': 'Resumen!A1:C1',
-    'values': '=Resumen!A3:C3',
+    'categories': 'Calculos!D1:E1',
+    'values': '=Calculos!A3:B3',
+    'data_labels': {'value': True},
+    'legend_key':  {'value': True},
     })
 worksheetResumen.insert_chart('K1', chart)
 #Grafico de Obligaciones a CP
@@ -214,6 +225,10 @@ chart.add_series({
 worksheetResumen.insert_chart('C16', chart)
 
 
+<<<<<<< Updated upstream
+=======
+worksheetResumen.insert_chart('L1', chart)
+>>>>>>> Stashed changes
 
 workbook.close()
 #Matriz de resultados de análisis
