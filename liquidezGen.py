@@ -10,20 +10,20 @@ titulos = [
         "Nro",
         "Coopac",
         "N° Socios",
-        "Total de Activos Brutos al 31/12/2020 (S/MM)",
+        "Total de Activos Brutos al 31/12/2020",
         "No. Agencias Total",
         "Agencias Abiertas",
         "¿Abierta Principal?",
         "Capta CTS",
         "Representatividad de MN de Fondos Disponibles",
         "Representatividad de MN de Obligaciones CP",
-        "Fondos Disponibles / Total de Activos Brutos (S/ MM)",
-        "Fondos Disponibles sin Restricción (MM)",
-        "Depósitos de Socios  Y COOPAC CP(pasivos, solo capital) (MM)",
-        "Obligaciones CP(pasivos, solo capital) (MM)",
+        "Fondos Disponibles / Total de Activos Brutos",
+        "Fondos Disponibles sin Restricción",
+        "Depósitos de Socios  Y COOPAC CP(pasivos, solo capital)",
+        "Obligaciones CP(pasivos, solo capital)",
         "Fondos Disponibles / Depósitos Socios",
-        "Depósitos 10 principales depositantes(MM)",
-        "% Depósitos 10 principales depositantes de Depósitos Totales (MM)",
+        "Depósitos 10 principales depositantes",
+        "% Depósitos 10 principales depositantes de Depósitos Totales",
         "Ratio de Liquidez en MN (Trimestral)",
         "Ratio de Liquidez en ME (Trimestral)"
     ]
@@ -241,13 +241,11 @@ worksheetResumen.insert_chart('L3', chart)
 #Grafico de Obligaciones a CP
 chart = workbook.add_chart({'type': 'pie'})
 chart.set_y_axis({'name': 'Cantidad de COOPAC'})
-chart.set_legend({'position': 'none'})
 chart.add_series({
     'name':       'Representatividad de MN de Obligaciones CP',
     'categories': 'Calculos!A5:F5',
     'values': '=Calculos!A6:F6',
     'data_labels': {'value': True},
-    'fill':   {'color': 'red'},
     })
 worksheetResumen.insert_chart('C18', chart)
 
