@@ -48,7 +48,7 @@ valores= [[] for i in range(23)]
 for dirName, subdirList, fileList in os.walk(folder_selected):                        
     for filename in fileList:   
         if ".xlsx" in filename.lower() or ".xlsm" in filename.lower(): 
-            if not filename.startswith('~$'):
+            if not filename.startswith('~$') and not filename.startswith('Lista Nueva'):
                 A_files.append(os.path.join(dirName,filename)) 
 
 
@@ -76,6 +76,10 @@ liq_normal_me = 0
 fondos_disp = 0
 intValue = 0
 condicion = ["Si", "No"]
+#Codigo para leer libro de analistas
+workbookCod = xlrd.open_workbook(folder_selected+"/data analistas/Lista Nueva de COOPAC.xlsx")
+worksheetCod = workbookCod.sheet_by_name('CODIGOS')
+analista = ""
 #Lectura de información en base a excel llamado desde el vector
 if(len(A_files) != 0):
     for i in range(len(A_files)):
@@ -85,14 +89,19 @@ if(len(A_files) != 0):
         workbook = xlrd.open_workbook(A_files[i])
         worksheet = workbook.sheet_by_name('Requerimiento') #Nombre de hoja a leer del Excel
         #Valor del Cod SBS
-        value = worksheet.cell(2, 4).value
-        valores[1].append(int(value))
+        valuecod = worksheet.cell(2, 4).value
+        valores[1].append(int(valuecod))
         #Valor de nombre de COOPAC - cell(fila,columna)
         value = worksheet.cell(3, 4).value
         valores[2].append(value)
         #Analista encargado
-        #valor = funcionAnalista
-        valores[3].append("Hector Bustamante");
+        for r in range(worksheetCod.nrows):
+            if r != 0:
+                row = worksheetCod.row(r)
+                if int(row[1].value) == valuecod:
+                    analista = row[10].value
+                    break
+        valores[3].append(analista)
         #Valor de Tipo de COOPAC
         value = worksheet.cell(9, 4).value
         valores[4].append(value)
@@ -312,16 +321,16 @@ chart.add_series({
     })
 worksheetResumen.insert_chart('L3', chart)
 #Grafico de Obligaciones a CP
-chart = workbook.add_chart({'type': 'column'})
-chart.set_y_axis({'name': 'Cantidad de COOPAC'})
-chart.set_legend({'position': 'none'})
-chart.add_series({
-    'name':       'Concentración de MN de Obligaciones a CP',
-    'categories': 'Calculos!A5:F5',
-    'values': '=Calculos!A6:F6',
-    'data_labels': {'value': True},
-    })
-worksheetResumen.insert_chart('C18', chart)
+#chart = workbook.add_chart({'type': 'column'})
+#chart.set_y_axis({'name': 'Cantidad de COOPAC'})
+#chart.set_legend({'position': 'none'})
+#chart.add_series({
+#    'name':       'Concentración de MN de Obligaciones a CP',
+#    'categories': 'Calculos!A5:F5',
+#    'values': '=Calculos!A6:F6',
+#    'data_labels': {'value': True},
+#    })
+#worksheetResumen.insert_chart('C18', chart)
 
 #Grafico de Depositantes %
 chart = workbook.add_chart({'type': 'column'})
@@ -329,12 +338,12 @@ chart.set_y_axis({'name': 'Cantidad de COOPAC'})
 chart.set_legend({'position': 'none'})
 chart.add_series({
     'name':       'Concentración de los 10 Principales Socios con respecto al Total de Depósitos de Socios',
-    'categories': 'Calculos!A5:F5',
-    'values': '=Calculos!A6:F6',
+    'categories': 'Calculos!A8:F8',
+    'values': '=Calculos!A9:F9',
     'data_labels': {'value': True},
     #'fill':   {'color': 'red'},
     })
-worksheetResumen.insert_chart('L18', chart)
+worksheetResumen.insert_chart('C18', chart)
 
 workbook.close()
 #Matriz de resultados de análisis
