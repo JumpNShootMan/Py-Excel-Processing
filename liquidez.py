@@ -9,6 +9,7 @@ from numpy import array, transpose
 
 titulos = [
         "Nro",
+        "Cod SBS",
         "Coopac",
         "Analista",
         "Tipo de COOPAC",
@@ -43,7 +44,7 @@ folder_selected = filedialog.askdirectory()
 A_files = []
 
 #Matriz de valores por llenar | Especificar cuántas filas deben haber en la salida global
-valores= [[] for i in range(22)]
+valores= [[] for i in range(23)]
 for dirName, subdirList, fileList in os.walk(folder_selected):                        
     for filename in fileList:   
         if ".xlsx" in filename.lower() or ".xlsm" in filename.lower(): 
@@ -83,53 +84,56 @@ if(len(A_files) != 0):
         #Lectura de excel
         workbook = xlrd.open_workbook(A_files[i])
         worksheet = workbook.sheet_by_name('Requerimiento') #Nombre de hoja a leer del Excel
+        #Valor del Cod SBS
+        value = worksheet.cell(2, 4).value
+        valores[1].append(int(value))
         #Valor de nombre de COOPAC - cell(fila,columna)
         value = worksheet.cell(3, 4).value
-        valores[1].append(value)
+        valores[2].append(value)
         #Analista encargado
         #valor = funcionAnalista
-        valores[2].append("Hector Bustamante");
+        valores[3].append("Hector Bustamante");
         #Valor de Tipo de COOPAC
         value = worksheet.cell(9, 4).value
-        valores[3].append(value)
+        valores[4].append(value)
         #Valor de Rango de Activo
         
         #Valor de Nº Socios
         value = worksheet.cell(10, 4).value
         
-        valores[5].append(intValue)
+        valores[6].append(intValue)
         #Valor de Total de Activos Brutos al 31/12/2020
         value = worksheet.cell(11, 4).value
         intValue = int(value)
         if (intValue <= 5000000):
-            valores[4].append("<= a 5 millones")
+            valores[5].append("<= a 5 millones")
         elif (intValue > 5000000 and intValue <= 10000000):
-            valores[4].append("> a 5 millones y <= 10 millones")
+            valores[5].append("> a 5 millones y <= 10 millones")
         elif (intValue > 10000000 and intValue <= 40000000):
-            valores[4].append("> a 10 millones y <= 40 millones")
+            valores[5].append("> a 10 millones y <= 40 millones")
         elif (intValue > 40000000 and intValue <= 80000000):
-            valores[4].append("> a 40 millones y <= 80 millones")
+            valores[5].append("> a 40 millones y <= 80 millones")
         elif (intValue > 80000000):
-             valores[4].append("> a 80 millones")
-        valores[6].append(value)
+             valores[5].append("> a 80 millones")
+        valores[7].append(value)
         #Valor de Nº Agencias
         value = worksheet.cell(12, 4).value
-        valores[7].append(value)
+        valores[8].append(value)
         #Valor de Nº Agencias Abiertas
         value = worksheet.cell(13, 4).value
-        valores[8].append(value)
+        valores[9].append(value)
         #Valor de Agencia Principal Abierta?
         value = worksheet.cell(14, 4).value
-        valores[9].append(value)
+        valores[10].append(value)
         #Valor Captan CTS?
         value = worksheet.cell(15, 4).value
-        valores[10].append(value)
+        valores[11].append(value)
         #Valor Fondos Disponibles (Cálculo)
         cal1 = worksheet.cell(25, 5).value
         cal2 = worksheet.cell(25, 7).value
         #fondos_disp.append(round(cal2,2))
         value = cal1/cal2 #Fondos disponibles -> Tabla 1 total en MN / total
-        valores[11].append(round(value,2)) #Se redondea a 2 decimales hasta nuevo aviso
+        valores[12].append(round(value,2)) #Se redondea a 2 decimales hasta nuevo aviso
         #Valor Obligaciones CP (Cálculo)
         cal1 = worksheet.cell(63, 5).value
         cal2 = worksheet.cell(63, 7).value
@@ -146,34 +150,34 @@ if(len(A_files) != 0):
             oblig5 += 1
         elif value >= 0.50:
             oblig6 += 1
-        valores[12].append(round(value,2)) #Se redondea a 2 decimales hasta nuevo aviso
+        valores[13].append(round(value,2)) #Se redondea a 2 decimales hasta nuevo aviso
         #Valor Fondos Disponibles / Total de Activos Brutos (Cálculo)
         cal1 = worksheet.cell(25, 7).value
         cal2 = worksheet.cell(11, 4).value #Por verificar
         value = cal1/cal2 #
-        valores[13].append(value) #Se redondea a 2 decimales hasta nuevo aviso
+        valores[14].append(value) #Se redondea a 2 decimales hasta nuevo aviso
         #Valor Fondos Disponibles Sin Restricción (Cálculo)
         cal1 = worksheet.cell(25, 7).value
         cal2 = worksheet.cell(53, 7).value 
         value = cal1 - cal2 #
-        valores[14].append(value) #Se redondea a 2 decimales hasta nuevo aviso
+        valores[15].append(value) #Se redondea a 2 decimales hasta nuevo aviso
         #Valor Depósitos de Socios y COOPAC CP (Cálculo)
         cal1 = worksheet.cell(59, 7).value
         cal2 = worksheet.cell(60, 7).value 
         value = cal1 + cal2 #
-        valores[15].append(value) #Se redondea a 2 decimales hasta nuevo aviso
+        valores[16].append(value) #Se redondea a 2 decimales hasta nuevo aviso
         #Valor Obligaciones CP
         value = worksheet.cell(63, 7).value
-        valores[16].append(value)
+        valores[17].append(value)
         #Valor Fondos Disponibles / Depósitos Socios (Cálculo)
         cal1 = worksheet.cell(25, 7).value
         cal2 = worksheet.cell(59, 7).value
         cal3 = worksheet.cell(67,7).value
         value = cal1 / (cal2+cal3) #
-        valores[17].append(round(value,2)) #Se redondea a 2 decimales hasta nuevo aviso
+        valores[18].append(round(value,2)) #Se redondea a 2 decimales hasta nuevo aviso
         #Valor Depósitos 10 Principales depositantes
         value = worksheet.cell(75, 7).value
-        valores[18].append(round(value,2)) #Se redondea a 2 decimales hasta nuevo aviso
+        valores[19].append(round(value,2)) #Se redondea a 2 decimales hasta nuevo aviso
         #Valor % Depósitos 10 Principales depositantes
         cal1 = worksheet.cell(75, 7).value
         cal2 = worksheet.cell(59, 7).value
@@ -193,7 +197,7 @@ if(len(A_files) != 0):
             deposit5 += 1
         elif value >= 0.90:
             deposit6 += 1
-        valores[19].append(round(value,2)) #Se redondea a 2 decimales hasta nuevo aviso
+        valores[20].append(round(value,2)) #Se redondea a 2 decimales hasta nuevo aviso
         #Valor Liquidez MN
         cal1 = worksheet.cell(25, 5).value
         cal2 = worksheet.cell(63, 5).value
@@ -204,7 +208,7 @@ if(len(A_files) != 0):
             liq_bajo_mn += 1
         elif (value > 0.15):
             liq_normal_mn += 1
-        valores[20].append(round(value,2)) #Se redondea a 2 decimales hasta nuevo aviso
+        valores[21].append(round(value,2)) #Se redondea a 2 decimales hasta nuevo aviso
         #Valor Liquidez ME
         cal1 = worksheet.cell(25, 6).value
         cal2 = worksheet.cell(63, 6).value
@@ -214,7 +218,7 @@ if(len(A_files) != 0):
         elif (value >= 0.2 ):
             liq_bajo_me += 1
         
-        valores[21].append(round(value,2)) #Se redondea a 2 decimales hasta nuevo aviso
+        valores[22].append(round(value,2)) #Se redondea a 2 decimales hasta nuevo aviso
 
 R_file = 0            
 # Arreglos de rangos de Liquidez MN y ME
@@ -273,7 +277,7 @@ valores = valores.tolist()
 
 worksheet.add_table('B3:T'+str(3+len(A_files)-1), {'data': valores, 'header_row': 0})
 
-worksheet.set_column(2, 2, 40) #Tamaño de columna nombre coopac
+worksheet.set_column(3, 3, 40) #Tamaño de columna nombre coopac
 worksheet.set_column(3, 19, 15) #Tamaño de columna general
 worksheetCalculos.write_row(0,0, liquidez_rangos)
 worksheetCalculos.write_row(1,0, liquidez_mn)
