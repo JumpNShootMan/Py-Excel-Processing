@@ -284,7 +284,7 @@ valores = array(valores)
 valores = transpose(valores)
 valores = valores.tolist()
 
-worksheet.add_table('B3:T'+str(3+len(A_files)-1), {'data': valores, 'header_row': 0})
+worksheet.add_table('B3:X'+str(3+len(A_files)-1), {'data': valores, 'header_row': 0})
 
 worksheet.set_column(3, 3, 40) #Tamaño de columna nombre coopac
 worksheet.set_column(3, 19, 15) #Tamaño de columna general
